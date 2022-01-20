@@ -10,6 +10,7 @@ import java.net.URL;
 
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.PriorityQueue;
 
@@ -87,7 +88,7 @@ public class GoogleQuery
 //   System.out.println(lis);
 		lis = lis.select(".kCrYT");
 		// System.out.println(lis.size());
-
+		ArrayList<WebPage> pages = new ArrayList<WebPage>();
 		for (Element li : lis) {
 			try
 
@@ -100,8 +101,8 @@ public class GoogleQuery
 				if (citeUrl.contains("&sa=U")) {
 					citeUrl = citeUrl.substring(citeUrl.indexOf("https"), citeUrl.indexOf("&sa=U"));
 				}
-				if (citeUrl.contains("wikipedia")) {
-					citeUrl = citeUrl.substring(citeUrl.indexOf("https"), citeUrl.indexOf("wiki/"));
+				if (citeUrl.contains("wiki")) {
+					citeUrl = citeUrl.substring(citeUrl.indexOf("https"), citeUrl.indexOf("zh-tw/"));
 				}
 				if (citeUrl.contains("youtube")) {
 					citeUrl = citeUrl.substring(citeUrl.indexOf("https"), citeUrl.indexOf("/watch"));
@@ -132,8 +133,11 @@ public class GoogleQuery
 				keywords.add(new Keyword("國際班", 2.5));
 				keywords.add(new Keyword("小學", 1));
 				keywords.add(new Keyword("幼稚園", 1));
-				System.out.println(web.name + "," + web.url + "(" + web.score + ")");
-				retVal.put(web.name, web.url);
+				web.setScore(keywords);
+				pages.add(web);
+				
+				//System.out.println(web.name + "," + web.url + "(" + web.score + ")");
+				//retVal.put(web.name, web.url);
 				// for(WebPage p:pages) {
 				// System.out.println(p.name+","+p.url+"("+p.score+")");
 				// }
@@ -143,9 +147,35 @@ public class GoogleQuery
 //    e.printStackTrace();
 
 			}
-
 		}
-
+				for(int a=0;a<pages.size()-1;a++) {
+					if(pages.get(a).score>pages.get(a+1).score) {
+						if(a==pages.size()-1) {
+							break;
+						}else {
+							continue;
+						}
+				}else {
+					for(int i=pages.size()-1;i>=0;i--) {
+						for(int j=0;j<pages.size()-1;j++) {
+							if(i!=j) {
+								if(pages.get(i).score>pages.get(j).score) {
+									Collections.swap(pages, i, j);
+								}else {
+									continue;
+								}		
+			}
+		}
+	}
+					}
+				
+						
+	
+		}
+				for(WebPage p:pages) {
+					System.out.println(p.name+","+p.url+"("+p.score+")");
+					retVal.put(p.name, p.url);
+				}
 		return retVal;
 
 	}
